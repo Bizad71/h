@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ساعت کاری ماهی</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="bg-orb orb1"></div><div class="bg-orb orb2"></div>
+<header><div class="sparkle">✦</div><h1>ساعت کاری ماهی</h1><p>ثبت ورود و خروج • گزارش هوشمند • آمار ساعات کاری</p></header>
+<main>
+<section class="card form-card">
+<h2>ثبت ساعت کار</h2>
+<div class="form-grid">
+<div class="field"><label>تاریخ</label><button class="date-picker" id="dateBtn">انتخاب تاریخ</button></div>
+<div class="field"><label>روز هفته</label><div class="readonly" id="dayDisplay">—</div></div>
+<div class="field"><label>ساعت ورود</label><input id="start" type="time"></div>
+<div class="field"><label>ساعت خروج</label><input id="end" type="time"></div>
+</div>
+<button id="addBtn">＋ ثبت ساعت کاری</button>
+<button id="pdfBtn" class="pdf">▣ ذخیره گزارش PDF</button>
+</section>
+
+<section class="stats">
+<div class="stat"><span>امروز</span><strong id="todayHours">۰</strong><small>ساعت</small></div>
+<div class="stat"><span>این ماه</span><strong id="monthHours">۰</strong><small>ساعت</small></div>
+<div class="stat"><span>روزهای کاری</span><strong id="workDays">۰</strong><small>روز</small></div>
+<div class="stat"><span>میانگین روزانه</span><strong id="avgHours">۰</strong><small>ساعت</small></div>
+</section>
+
+<section class="charts">
+<div class="card chart-card"><h2>روند ساعت کاری</h2><canvas id="barChart"></canvas></div>
+<div class="card chart-card"><h2>وضعیت این ماه</h2><div class="donut-wrap"><canvas id="donutChart"></canvas><div id="donutText">۰٪</div></div><div class="legend"><span><i class="dot worked"></i> کارکرد</span><span><i class="dot remaining"></i> باقی‌مانده</span></div></div>
+</section>
+
+<section class="card records"><div class="records-head"><h2>گزارش ثبت‌ها</h2><button id="clearBtn" class="danger">پاک کردن همه</button></div>
+<div class="table-wrap"><table><thead><tr><th>تاریخ</th><th>روز</th><th>ورود</th><th>خروج</th><th>مدت کار</th><th></th></tr></thead><tbody id="rows"></tbody></table></div>
+<div id="empty">هنوز ساعتی ثبت نشده است.</div></section>
+</main>
+
+<div class="modal" id="calendarModal">
+<div class="calendar">
+<div class="cal-head"><button id="prevMonth">‹</button><div><b id="monthName"></b><small id="yearName"></small></div><button id="nextMonth">›</button></div>
+<div class="weekdays"><span>ش</span><span>ی</span><span>د</span><span>س</span><span>چ</span><span>پ</span><span>ج</span></div>
+<div class="days" id="days"></div>
+<div class="cal-bottom"><button id="todayBtn">امروز</button><button id="closeCal" class="close">بستن</button></div>
+</div></div>
+
+<script src="script.js"></script>
+</body></html>
