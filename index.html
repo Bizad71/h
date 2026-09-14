@@ -1,50 +1,1243 @@
 <!doctype html>
 <html lang="fa" dir="rtl">
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>ساعت کاری </title>
-<link rel="stylesheet" href="style.css">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>BIZA Store UI</title>
+
+<style>
+*{
+  box-sizing:border-box;
+}
+
+:root{
+  --bg:#05070d;
+  --card:rgba(15,19,35,.82);
+  --card2:rgba(20,25,45,.72);
+  --line:rgba(255,255,255,.09);
+  --blue:#4d8dff;
+  --blue2:#2874ff;
+  --purple:#9a5cff;
+  --purple2:#7138e8;
+  --green:#57e6b0;
+  --text:#f5f7ff;
+  --muted:#929bb0;
+  --danger:#ff5f75;
+}
+
+html,
+body{
+  margin:0;
+  padding:0;
+  min-height:100%;
+}
+
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:
+    Tahoma,
+    Arial,
+    sans-serif;
+  overflow-x:hidden;
+}
+
+button,
+input{
+  font:inherit;
+}
+
+button{
+  cursor:pointer;
+}
+
+/* =========================
+   BACKGROUND NETWORK
+========================= */
+
+#network{
+  position:fixed;
+  inset:0;
+  z-index:0;
+  overflow:hidden;
+  pointer-events:none;
+  background:
+    radial-gradient(
+      circle at 15% 20%,
+      rgba(70,120,255,.08),
+      transparent 30%
+    ),
+    radial-gradient(
+      circle at 80% 75%,
+      rgba(150,80,255,.08),
+      transparent 30%
+    ),
+    #05070d;
+}
+
+.node{
+  position:absolute;
+  width:3px;
+  height:3px;
+  border-radius:50%;
+  background:#72a8ff;
+  box-shadow:
+    0 0 5px #72a8ff,
+    0 0 16px rgba(72,130,255,.8);
+  animation:
+    nodePulse 3s infinite ease-in-out;
+}
+
+.line{
+  position:absolute;
+  height:1px;
+  transform-origin:left center;
+  background:
+    linear-gradient(
+      90deg,
+      transparent,
+      rgba(83,135,255,.35),
+      transparent
+    );
+  animation:linePulse 4s infinite ease-in-out;
+}
+
+@keyframes nodePulse{
+  0%,100%{
+    opacity:.35;
+    transform:scale(.8);
+  }
+  50%{
+    opacity:1;
+    transform:scale(1.7);
+  }
+}
+
+@keyframes linePulse{
+  0%,100%{
+    opacity:.15;
+  }
+  50%{
+    opacity:.65;
+  }
+}
+
+/* =========================
+   APP
+========================= */
+
+.app{
+  position:relative;
+  z-index:1;
+  min-height:100vh;
+  padding-bottom:105px;
+}
+
+/* =========================
+   TOP BAR
+========================= */
+
+.topbar{
+  width:min(100%,720px);
+  margin:auto;
+  height:78px;
+  padding:15px 18px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+}
+
+.brand{
+  font-size:25px;
+  font-weight:900;
+  letter-spacing:3px;
+
+  background:
+    linear-gradient(
+      90deg,
+      var(--blue),
+      var(--purple)
+    );
+
+  -webkit-background-clip:text;
+  background-clip:text;
+  color:transparent;
+}
+
+.user-info{
+  margin-top:5px;
+  color:var(--muted);
+  font-size:11px;
+}
+
+.icon-btn{
+  width:43px;
+  height:43px;
+  border-radius:15px;
+  color:white;
+  background:rgba(255,255,255,.06);
+  border:1px solid var(--line);
+}
+
+/* =========================
+   MAIN
+========================= */
+
+main{
+  width:min(100%,720px);
+  margin:auto;
+  padding:0 16px;
+}
+
+.hero{
+  padding:
+    12px
+    2px
+    20px;
+}
+
+.hero-small{
+  color:var(--muted);
+  font-size:12px;
+}
+
+.hero h1{
+  margin:9px 0 0;
+  font-size:29px;
+  line-height:1.5;
+}
+
+.gradient{
+  background:
+    linear-gradient(
+      90deg,
+      var(--blue),
+      var(--purple)
+    );
+
+  -webkit-background-clip:text;
+  background-clip:text;
+  color:transparent;
+}
+
+/* =========================
+   GLASS CARD
+========================= */
+
+.card{
+  background:
+    linear-gradient(
+      145deg,
+      rgba(22,28,51,.88),
+      rgba(8,12,24,.82)
+    );
+
+  border:
+    1px solid
+    var(--line);
+
+  border-radius:24px;
+
+  box-shadow:
+    0 18px 50px
+    rgba(0,0,0,.22);
+
+  backdrop-filter:blur(18px);
+  -webkit-backdrop-filter:blur(18px);
+}
+
+/* =========================
+   STATS
+========================= */
+
+.stats{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
+}
+
+.stat{
+  padding:17px;
+}
+
+.stat-label{
+  color:var(--muted);
+  font-size:11px;
+}
+
+.stat-value{
+  margin-top:9px;
+  font-size:25px;
+  font-weight:900;
+}
+
+.blue{
+  color:#72a8ff;
+}
+
+.purple{
+  color:#b184ff;
+}
+
+.green{
+  color:#62e4b2;
+}
+
+/* =========================
+   QUICK ACTIONS
+========================= */
+
+.section-header{
+  margin:
+    24px
+    2px
+    11px;
+
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+}
+
+.section-header h2{
+  margin:0;
+  font-size:17px;
+}
+
+.section-header span{
+  color:#8fa9ff;
+  font-size:11px;
+}
+
+.actions{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
+}
+
+.action{
+  min-height:125px;
+  padding:18px;
+  text-align:right;
+  color:white;
+  position:relative;
+  overflow:hidden;
+  transition:
+    transform .2s,
+    border-color .2s;
+}
+
+.action:hover{
+  transform:translateY(-2px);
+  border-color:
+    rgba(100,140,255,.35);
+}
+
+.action::after{
+  content:"";
+  position:absolute;
+  width:120px;
+  height:120px;
+  border-radius:50%;
+
+  left:-45px;
+  bottom:-65px;
+
+  background:
+    radial-gradient(
+      circle,
+      rgba(86,123,255,.18),
+      transparent 70%
+    );
+}
+
+.action-icon{
+  width:47px;
+  height:47px;
+  border-radius:16px;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  font-size:23px;
+
+  background:
+    linear-gradient(
+      135deg,
+      rgba(67,133,255,.25),
+      rgba(151,78,255,.25)
+    );
+
+  border:
+    1px solid
+    rgba(110,145,255,.2);
+}
+
+.action strong{
+  display:block;
+  margin-top:15px;
+  font-size:14px;
+}
+
+.action small{
+  display:block;
+  margin-top:6px;
+  color:var(--muted);
+  font-size:10px;
+  line-height:1.7;
+}
+
+/* =========================
+   SALES LIST
+========================= */
+
+.sales-list{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+
+.sale-row{
+  display:flex;
+  align-items:center;
+  gap:12px;
+
+  padding:13px;
+
+  background:
+    rgba(14,19,34,.76);
+
+  border:
+    1px solid
+    var(--line);
+
+  border-radius:20px;
+}
+
+.sale-icon{
+  width:45px;
+  height:45px;
+
+  border-radius:15px;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  font-size:12px;
+  font-weight:bold;
+
+  background:
+    linear-gradient(
+      135deg,
+      #3e7eff,
+      #914dff
+    );
+}
+
+.sale-info{
+  flex:1;
+  min-width:0;
+}
+
+.sale-info strong{
+  display:block;
+  font-size:13px;
+}
+
+.sale-info small{
+  display:block;
+  margin-top:5px;
+  color:var(--muted);
+  font-size:10px;
+}
+
+.sale-price{
+  font-size:12px;
+  font-weight:800;
+}
+
+/* =========================
+   BOTTOM NAV
+========================= */
+
+.bottom-nav{
+  position:fixed;
+  z-index:10;
+
+  left:50%;
+  bottom:14px;
+
+  transform:translateX(-50%);
+
+  width:
+    min(
+      calc(100% - 24px),
+      680px
+    );
+
+  display:grid;
+  grid-template-columns:
+    1fr
+    1fr
+    1fr;
+
+  gap:5px;
+
+  padding:8px;
+
+  background:
+    rgba(10,14,27,.9);
+
+  border:
+    1px solid
+    rgba(255,255,255,.1);
+
+  border-radius:27px;
+
+  box-shadow:
+    0 18px 55px
+    rgba(0,0,0,.5);
+
+  backdrop-filter:blur(22px);
+}
+
+.nav-btn{
+  height:62px;
+
+  border-radius:20px;
+
+  color:#737d95;
+
+  background:transparent;
+
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+
+  gap:5px;
+
+  transition:.2s;
+}
+
+.nav-btn.active{
+  color:white;
+
+  background:
+    linear-gradient(
+      135deg,
+      rgba(65,128,255,.22),
+      rgba(148,76,255,.22)
+    );
+
+  box-shadow:
+    inset 0 0 25px
+    rgba(86,117,255,.06);
+}
+
+.nav-icon{
+  font-size:21px;
+}
+
+.nav-label{
+  font-size:10px;
+}
+
+/* =========================
+   MODAL
+========================= */
+
+.modal{
+  position:fixed;
+  inset:0;
+  z-index:30;
+
+  display:none;
+  align-items:flex-end;
+
+  padding:12px;
+
+  background:
+    rgba(0,0,0,.72);
+}
+
+.modal.show{
+  display:flex;
+}
+
+.sheet{
+  width:min(100%,680px);
+  margin:auto;
+
+  padding:20px;
+
+  background:
+    linear-gradient(
+      145deg,
+      #12182c,
+      #080c18
+    );
+
+  border:
+    1px solid
+    var(--line);
+
+  border-radius:
+    30px
+    30px
+    22px
+    22px;
+
+  box-shadow:
+    0 -20px 80px
+    rgba(0,0,0,.5);
+
+  backdrop-filter:blur(25px);
+}
+
+.sheet-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+
+  margin-bottom:20px;
+}
+
+.sheet-title{
+  font-size:18px;
+  font-weight:900;
+}
+
+.close-btn{
+  width:38px;
+  height:38px;
+
+  border-radius:13px;
+
+  color:white;
+
+  background:
+    rgba(255,255,255,.07);
+
+  border:
+    1px solid
+    var(--line);
+}
+
+.field{
+  margin-bottom:14px;
+}
+
+.field label{
+  display:block;
+  margin-bottom:7px;
+
+  color:var(--muted);
+  font-size:11px;
+}
+
+.field input{
+  width:100%;
+
+  padding:14px;
+
+  color:white;
+
+  outline:none;
+
+  border:
+    1px solid
+    var(--line);
+
+  border-radius:16px;
+
+  background:
+    rgba(5,8,17,.85);
+}
+
+.primary-btn{
+  width:100%;
+
+  padding:15px;
+
+  color:white;
+
+  border-radius:17px;
+
+  font-weight:900;
+
+  background:
+    linear-gradient(
+      90deg,
+      var(--blue2),
+      var(--purple2)
+    );
+
+  box-shadow:
+    0 10px 30px
+    rgba(75,95,255,.2);
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media(min-width:650px){
+
+  .stats{
+    grid-template-columns:
+      repeat(4,1fr);
+  }
+
+  .actions{
+    grid-template-columns:
+      repeat(4,1fr);
+  }
+
+  .action{
+    min-height:145px;
+  }
+}
+</style>
 </head>
+
 <body>
-<div class="bg-orb orb1"></div><div class="bg-orb orb2"></div>
-<header><div class="sparkle">✦</div><h1>ساعت کاری </h1><p>ثبت ورود و خروج • گزارش هوشمند • آمار ساعات کاری</p></header>
+
+<div id="network"></div>
+
+<div class="app">
+
+<header class="topbar">
+
+  <div>
+    <div class="brand">BIZA</div>
+    <div class="user-info">
+      بیزا مارکت • پنل فروشگاه
+    </div>
+  </div>
+
+  <button class="icon-btn">
+    ☰
+  </button>
+
+</header>
+
 <main>
-<section class="card form-card">
-<h2>ثبت ساعت کار</h2>
-<div class="form-grid">
-<div class="field"><label>تاریخ</label><button class="date-picker" id="dateBtn">انتخاب تاریخ</button></div>
-<div class="field"><label>روز هفته</label><div class="readonly" id="dayDisplay">—</div></div>
-<div class="field"><label>ساعت ورود</label><input id="start" type="time"></div>
-<div class="field"><label>ساعت خروج</label><input id="end" type="time"></div>
-</div>
-<button id="addBtn">＋ ثبت ساعت کاری</button>
-<button id="pdfBtn" class="pdf">▣ ذخیره گزارش PDF</button>
+
+<section class="hero">
+
+  <div class="hero-small">
+    امروز، وضعیت فروشگاه
+  </div>
+
+  <h1>
+    سلام،
+    <span class="gradient">
+      بیزا مارکت
+    </span>
+  </h1>
+
 </section>
+
+
+<!-- =========================
+     STAT CARDS
+========================= -->
 
 <section class="stats">
-<div class="stat"><span>امروز</span><strong id="todayHours">۰</strong><small>ساعت</small></div>
-<div class="stat"><span>این ماه</span><strong id="monthHours">۰</strong><small>ساعت</small></div>
-<div class="stat"><span>روزهای کاری</span><strong id="workDays">۰</strong><small>روز</small></div>
-<div class="stat"><span>میانگین روزانه</span><strong id="avgHours">۰</strong><small>ساعت</small></div>
+
+  <div class="card stat">
+    <div class="stat-label">
+      تعداد کالا
+    </div>
+
+    <div class="stat-value blue">
+      248
+    </div>
+  </div>
+
+
+  <div class="card stat">
+    <div class="stat-label">
+      موجودی انبار
+    </div>
+
+    <div class="stat-value green">
+      1,842
+    </div>
+  </div>
+
+
+  <div class="card stat">
+    <div class="stat-label">
+      فروش امروز
+    </div>
+
+    <div class="stat-value purple">
+      18.4M
+    </div>
+  </div>
+
+
+  <div class="card stat">
+    <div class="stat-label">
+      فاکتور امروز
+    </div>
+
+    <div class="stat-value">
+      37
+    </div>
+  </div>
+
 </section>
 
-<section class="charts">
-<div class="card chart-card"><h2>روند ساعت کاری</h2><canvas id="barChart"></canvas></div>
-<div class="card chart-card"><h2>وضعیت این ماه</h2><div class="donut-wrap"><canvas id="donutChart"></canvas><div id="donutText">۰٪</div></div><div class="legend"><span><i class="dot worked"></i> کارکرد</span><span><i class="dot remaining"></i> باقی‌مانده</span></div></div>
+
+<!-- =========================
+     QUICK ACTIONS
+========================= -->
+
+<div class="section-header">
+
+  <h2>
+    عملیات سریع
+  </h2>
+
+  <span>
+    مدیریت فروشگاه
+  </span>
+
+</div>
+
+
+<section class="actions">
+
+  <button
+    class="card action"
+    onclick="openModal('sale')"
+  >
+
+    <div class="action-icon">
+      ＋
+    </div>
+
+    <strong>
+      فروش جدید
+    </strong>
+
+    <small>
+      ثبت فروش و صدور فاکتور
+    </small>
+
+  </button>
+
+
+  <button
+    class="card action"
+    onclick="openModal('stock')"
+  >
+
+    <div class="action-icon">
+      ▣
+    </div>
+
+    <strong>
+      ورود به انبار
+    </strong>
+
+    <small>
+      ثبت کالا و افزایش موجودی
+    </small>
+
+  </button>
+
+
+  <button
+    class="card action"
+    onclick="openModal('product')"
+  >
+
+    <div class="action-icon">
+      ◈
+    </div>
+
+    <strong>
+      ثبت کالا
+    </strong>
+
+    <small>
+      ایجاد کالای جدید با بارکد
+    </small>
+
+  </button>
+
+
+  <button
+    class="card action"
+    onclick="openModal('report')"
+  >
+
+    <div class="action-icon">
+      ◔
+    </div>
+
+    <strong>
+      گزارش فروش
+    </strong>
+
+    <small>
+      مشاهده آمار و روند فروش
+    </small>
+
+  </button>
+
 </section>
 
-<section class="card records"><div class="records-head"><h2>گزارش ثبت‌ها</h2><button id="clearBtn" class="danger">پاک کردن همه</button></div>
-<div class="table-wrap"><table><thead><tr><th>تاریخ</th><th>روز</th><th>ورود</th><th>خروج</th><th>مدت کار</th><th></th></tr></thead><tbody id="rows"></tbody></table></div>
-<div id="empty">هنوز ساعتی ثبت نشده است.</div></section>
+
+<!-- =========================
+     LAST SALES
+========================= -->
+
+<div class="section-header">
+
+  <h2>
+    آخرین فروش‌ها
+  </h2>
+
+  <span>
+    مشاهده همه
+  </span>
+
+</div>
+
+
+<section class="sales-list">
+
+  <div class="sale-row">
+
+    <div class="sale-icon">
+      01
+    </div>
+
+    <div class="sale-info">
+
+      <strong>
+        فاکتور #1028
+      </strong>
+
+      <small>
+        امروز، 18:42 • 3 کالا
+      </small>
+
+    </div>
+
+    <div class="sale-price">
+      2,450,000
+    </div>
+
+  </div>
+
+
+  <div class="sale-row">
+
+    <div class="sale-icon">
+      02
+    </div>
+
+    <div class="sale-info">
+
+      <strong>
+        فاکتور #1027
+      </strong>
+
+      <small>
+        امروز، 17:16 • 1 کالا
+      </small>
+
+    </div>
+
+    <div class="sale-price">
+      780,000
+    </div>
+
+  </div>
+
+
+  <div class="sale-row">
+
+    <div class="sale-icon">
+      03
+    </div>
+
+    <div class="sale-info">
+
+      <strong>
+        فاکتور #1026
+      </strong>
+
+      <small>
+        امروز، 16:03 • 5 کالا
+      </small>
+
+    </div>
+
+    <div class="sale-price">
+      4,120,000
+    </div>
+
+  </div>
+
+</section>
+
 </main>
 
-<div class="modal" id="calendarModal">
-<div class="calendar">
-<div class="cal-head"><button id="prevMonth">‹</button><div><b id="monthName"></b><small id="yearName"></small></div><button id="nextMonth">›</button></div>
-<div class="weekdays"><span>ش</span><span>ی</span><span>د</span><span>س</span><span>چ</span><span>پ</span><span>ج</span></div>
-<div class="days" id="days"></div>
-<div class="cal-bottom"><button id="todayBtn">امروز</button><button id="closeCal" class="close">بستن</button></div>
-</div></div>
 
-<script src="script.js"></script>
-</body></html>
+<!-- =========================
+     BOTTOM NAV
+========================= -->
+
+<nav class="bottom-nav">
+
+  <button class="nav-btn">
+
+    <div class="nav-icon">
+      ＋
+    </div>
+
+    <div class="nav-label">
+      فروش
+    </div>
+
+  </button>
+
+
+  <button class="nav-btn active">
+
+    <div class="nav-icon">
+      ⌂
+    </div>
+
+    <div class="nav-label">
+      خانه
+    </div>
+
+  </button>
+
+
+  <button class="nav-btn">
+
+    <div class="nav-icon">
+      ▤
+    </div>
+
+    <div class="nav-label">
+      انبار
+    </div>
+
+  </button>
+
+</nav>
+
+</div>
+
+
+<!-- =========================
+     MODAL
+========================= -->
+
+<div
+  id="modal"
+  class="modal"
+  onclick="closeOutside(event)"
+>
+
+  <div class="sheet">
+
+    <div class="sheet-head">
+
+      <div
+        id="modalTitle"
+        class="sheet-title"
+      >
+        فروش جدید
+      </div>
+
+      <button
+        class="close-btn"
+        onclick="closeModal()"
+      >
+        ×
+      </button>
+
+    </div>
+
+
+    <div class="field">
+
+      <label>
+        بارکد کالا
+      </label>
+
+      <input
+        id="barcode"
+        placeholder="بارکد را وارد یا اسکن کنید"
+      >
+
+    </div>
+
+
+    <div class="field">
+
+      <label>
+        تعداد
+      </label>
+
+      <input
+        type="number"
+        value="1"
+        min="1"
+      >
+
+    </div>
+
+
+    <button
+      class="primary-btn"
+      onclick="closeModal()"
+    >
+      ادامه
+    </button>
+
+  </div>
+
+</div>
+
+
+<script>
+
+/* =========================
+   NETWORK
+========================= */
+
+const network =
+  document.getElementById("network");
+
+const nodes=[];
+
+for(let i=0;i<32;i++){
+
+  const node=
+    document.createElement("span");
+
+  node.className="node";
+
+  node.style.left=
+    Math.random()*100+"%";
+
+  node.style.top=
+    Math.random()*100+"%";
+
+  node.style.animationDelay=
+    Math.random()*3+"s";
+
+  network.appendChild(node);
+
+  nodes.push(node);
+}
+
+
+for(let i=0;i<22;i++){
+
+  const line=
+    document.createElement("i");
+
+  line.className="line";
+
+  line.style.left=
+    Math.random()*95+"%";
+
+  line.style.top=
+    Math.random()*95+"%";
+
+  line.style.width=
+    80+Math.random()*220+"px";
+
+  line.style.transform=
+    "rotate("+
+    Math.random()*360+
+    "deg)";
+
+  line.style.animationDelay=
+    Math.random()*4+"s";
+
+  network.appendChild(line);
+}
+
+
+/* =========================
+   MODAL
+========================= */
+
+const modal=
+  document.getElementById("modal");
+
+const modalTitle=
+  document.getElementById("modalTitle");
+
+
+function openModal(type){
+
+  if(type==="sale"){
+
+    modalTitle.textContent=
+      "فروش جدید";
+
+  }
+
+  if(type==="stock"){
+
+    modalTitle.textContent=
+      "ورود به انبار";
+
+  }
+
+  if(type==="product"){
+
+    modalTitle.textContent=
+      "ثبت کالا";
+
+  }
+
+  if(type==="report"){
+
+    modalTitle.textContent=
+      "گزارش فروش";
+
+  }
+
+  modal.classList.add("show");
+
+}
+
+
+function closeModal(){
+
+  modal.classList.remove("show");
+
+}
+
+
+function closeOutside(event){
+
+  if(event.target===modal){
+
+    closeModal();
+
+  }
+
+}
+
+</script>
+
+</body>
+</html>
