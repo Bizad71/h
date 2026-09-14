@@ -2,7 +2,7 @@
 
 
 /* =========================================
-   ELEMENT HELPER
+   HELPER
 ========================================= */
 
 function $(id){
@@ -13,74 +13,636 @@ function $(id){
 
 
 /* =========================================
-   NETWORK
+   LIVE BLOCKCHAIN NETWORK
 ========================================= */
 
 function createNetwork(){
 
     const network = $("network");
 
-    if(!network) return;
+    if(!network){
+        return;
+    }
+
+
+    network.innerHTML = "";
+
+
+    const canvas =
+        document.createElement("canvas");
+
+
+    canvas.style.position = "absolute";
+    canvas.style.inset = "0";
+    canvas.style.width = "100%";
+    canvas.style.height = "100%";
+
+
+    network.appendChild(canvas);
+
+
+    const ctx =
+        canvas.getContext("2d");
+
+
+    let width = 0;
+    let height = 0;
+
+
+    let dpr =
+        Math.min(
+            window.devicePixelRatio || 1,
+            2
+        );
+
 
     const nodes = [];
 
-    for(let i = 0; i < 32; i++){
 
-        const node =
-            document.createElement("span");
+    let nodeCount =
+        window.innerWidth < 600
+            ? 42
+            : 72;
 
-        node.className = "node";
 
-        node.style.left =
-            Math.random() * 100 + "%";
+    const connectionDistance =
+        window.innerWidth < 600
+            ? 145
+            : 175;
 
-        node.style.top =
-            Math.random() * 100 + "%";
 
-        node.style.animationDelay =
-            Math.random() * 3 + "s";
+    /* =====================================
+       RESIZE
+    ====================================== */
 
-        network.appendChild(node);
+    function resize(){
 
-        nodes.push(node);
+        width =
+            window.innerWidth;
+
+        height =
+            window.innerHeight;
+
+
+        dpr =
+            Math.min(
+                window.devicePixelRatio || 1,
+                2
+            );
+
+
+        canvas.width =
+            width * dpr;
+
+        canvas.height =
+            height * dpr;
+
+
+        canvas.style.width =
+            width + "px";
+
+        canvas.style.height =
+            height + "px";
+
+
+        ctx.setTransform(
+            dpr,
+            0,
+            0,
+            dpr,
+            0,
+            0
+        );
 
     }
 
 
-    for(let i = 0; i < 24; i++){
+    resize();
 
-        const line =
-            document.createElement("i");
 
-        line.className =
-            "network-line";
+    window.addEventListener(
+        "resize",
+        resize
+    );
 
-        line.style.left =
-            Math.random() * 95 + "%";
 
-        line.style.top =
-            Math.random() * 95 + "%";
+    /* =====================================
+       CREATE NODES
+    ====================================== */
 
-        line.style.width =
-            80 + Math.random() * 240 + "px";
+    for(
+        let i = 0;
+        i < nodeCount;
+        i++
+    ){
 
-        line.style.transform =
-            "rotate(" +
-            Math.random() * 360 +
-            "deg)";
+        nodes.push({
 
-        line.style.animationDelay =
-            Math.random() * 4 + "s";
+            x:
+                Math.random() *
+                width,
 
-        network.appendChild(line);
+            y:
+                Math.random() *
+                height,
+
+            vx:
+                (Math.random() - .5)
+                * .30,
+
+            vy:
+                (Math.random() - .5)
+                * .30,
+
+            radius:
+                1.3 +
+                Math.random() * 1.8,
+
+            pulse:
+                Math.random() *
+                Math.PI * 2,
+
+            pulseSpeed:
+                .012 +
+                Math.random() * .015
+
+        });
 
     }
+
+
+    /* =====================================
+       DISTANCE
+    ====================================== */
+
+    function distance(a,b){
+
+        const dx =
+            a.x - b.x;
+
+        const dy =
+            a.y - b.y;
+
+        return Math.sqrt(
+            dx * dx +
+            dy * dy
+        );
+
+    }
+
+
+    /* =====================================
+       ANIMATION
+    ====================================== */
+
+    function animate(){
+
+        ctx.clearRect(
+            0,
+            0,
+            width,
+            height
+        );
+
+
+        const now =
+            performance.now();
+
+
+        /* =================================
+           MOVE NODES
+        ================================== */
+
+        nodes.forEach(node => {
+
+            node.x += node.vx;
+            node.y += node.vy;
+
+
+            node.pulse +=
+                node.pulseSpeed;
+
+
+            /*
+             * نرم کردن حرکت
+             */
+
+            node.vx +=
+                (Math.random() - .5)
+                * .003;
+
+            node.vy +=
+                (Math.random() - .5)
+                * .003;
+
+
+            /*
+             * محدود کردن سرعت
+             */
+
+            const speed =
+                Math.sqrt(
+                    node.vx * node.vx +
+                    node.vy * node.vy
+                );
+
+
+            const maxSpeed =
+                .42;
+
+
+            if(speed > maxSpeed){
+
+                node.vx =
+                    node.vx /
+                    speed *
+                    maxSpeed;
+
+                node.vy =
+                    node.vy /
+                    speed *
+                    maxSpeed;
+
+            }
+
+
+            /*
+             * برگشت از لبه
+             */
+
+            if(
+                node.x < 0 ||
+                node.x > width
+            ){
+
+                node.vx *= -1;
+
+            }
+
+
+            if(
+                node.y < 0 ||
+                node.y > height
+            ){
+
+                node.vy *= -1;
+
+            }
+
+
+            node.x =
+                Math.max(
+                    0,
+                    Math.min(
+                        width,
+                        node.x
+                    )
+                );
+
+
+            node.y =
+                Math.max(
+                    0,
+                    Math.min(
+                        height,
+                        node.y
+                    )
+                );
+
+        });
+
+
+        /* =================================
+           CONNECTIONS
+        ================================== */
+
+        for(
+            let i = 0;
+            i < nodes.length;
+            i++
+        ){
+
+            for(
+                let j = i + 1;
+                j < nodes.length;
+                j++
+            ){
+
+                const a =
+                    nodes[i];
+
+                const b =
+                    nodes[j];
+
+
+                const dist =
+                    distance(a,b);
+
+
+                if(
+                    dist >
+                    connectionDistance
+                ){
+
+                    continue;
+
+                }
+
+
+                const strength =
+                    1 -
+                    dist /
+                    connectionDistance;
+
+
+                const opacity =
+                    .08 +
+                    strength *
+                    .38;
+
+
+                /* =========================
+                   CONNECTION LINE
+                ========================== */
+
+                const gradient =
+                    ctx.createLinearGradient(
+                        a.x,
+                        a.y,
+                        b.x,
+                        b.y
+                    );
+
+
+                gradient.addColorStop(
+                    0,
+                    `rgba(
+                        63,
+                        130,
+                        255,
+                        ${opacity}
+                    )`
+                );
+
+
+                gradient.addColorStop(
+                    .5,
+                    `rgba(
+                        145,
+                        83,
+                        255,
+                        ${opacity}
+                    )`
+                );
+
+
+                gradient.addColorStop(
+                    1,
+                    `rgba(
+                        63,
+                        130,
+                        255,
+                        ${opacity}
+                    )`
+                );
+
+
+                ctx.beginPath();
+
+                ctx.moveTo(
+                    a.x,
+                    a.y
+                );
+
+                ctx.lineTo(
+                    b.x,
+                    b.y
+                );
+
+
+                ctx.strokeStyle =
+                    gradient;
+
+                ctx.lineWidth =
+                    .55 +
+                    strength * .7;
+
+
+                ctx.stroke();
+
+
+                /* =========================
+                   MOVING LIGHT
+                ========================== */
+
+                const speed =
+                    .00022;
+
+
+                const progress =
+                    (
+                        now * speed
+                        +
+                        i * .071
+                        +
+                        j * .037
+                    ) % 1;
+
+
+                const lightX =
+                    a.x +
+                    (b.x - a.x)
+                    * progress;
+
+
+                const lightY =
+                    a.y +
+                    (b.y - a.y)
+                    * progress;
+
+
+                const glow =
+                    ctx.createRadialGradient(
+                        lightX,
+                        lightY,
+                        0,
+                        lightX,
+                        lightY,
+                        9
+                    );
+
+
+                glow.addColorStop(
+                    0,
+                    `rgba(
+                        180,
+                        210,
+                        255,
+                        ${strength * .9}
+                    )`
+                );
+
+
+                glow.addColorStop(
+                    .35,
+                    `rgba(
+                        105,
+                        150,
+                        255,
+                        ${strength * .35}
+                    )`
+                );
+
+
+                glow.addColorStop(
+                    1,
+                    "rgba(80,120,255,0)"
+                );
+
+
+                ctx.beginPath();
+
+                ctx.arc(
+                    lightX,
+                    lightY,
+                    9,
+                    0,
+                    Math.PI * 2
+                );
+
+                ctx.fillStyle =
+                    glow;
+
+                ctx.fill();
+
+            }
+
+        }
+
+
+        /* =================================
+           NODES
+        ================================== */
+
+        nodes.forEach(node => {
+
+            const pulse =
+                (
+                    Math.sin(node.pulse)
+                    + 1
+                ) / 2;
+
+
+            const radius =
+                node.radius +
+                pulse * 1.2;
+
+
+            /* =========================
+               OUTER GLOW
+            ========================== */
+
+            const glow =
+                ctx.createRadialGradient(
+                    node.x,
+                    node.y,
+                    0,
+                    node.x,
+                    node.y,
+                    17
+                );
+
+
+            glow.addColorStop(
+                0,
+                `rgba(
+                    105,
+                    165,
+                    255,
+                    ${.40 + pulse * .20}
+                )`
+            );
+
+
+            glow.addColorStop(
+                .25,
+                `rgba(
+                    85,
+                    135,
+                    255,
+                    ${.16 + pulse * .12}
+                )`
+            );
+
+
+            glow.addColorStop(
+                1,
+                "rgba(70,120,255,0)"
+            );
+
+
+            ctx.beginPath();
+
+            ctx.arc(
+                node.x,
+                node.y,
+                17,
+                0,
+                Math.PI * 2
+            );
+
+            ctx.fillStyle =
+                glow;
+
+            ctx.fill();
+
+
+            /* =========================
+               NODE CORE
+            ========================== */
+
+            ctx.beginPath();
+
+            ctx.arc(
+                node.x,
+                node.y,
+                radius,
+                0,
+                Math.PI * 2
+            );
+
+
+            ctx.fillStyle =
+                "#7db0ff";
+
+            ctx.shadowBlur =
+                14;
+
+            ctx.shadowColor =
+                "#5794ff";
+
+            ctx.fill();
+
+
+            ctx.shadowBlur = 0;
+
+        });
+
+
+        requestAnimationFrame(
+            animate
+        );
+
+    }
+
+
+    animate();
 
 }
 
 
 /* =========================================
-   PAGE MANAGEMENT
+   PAGE SYSTEM
 ========================================= */
 
 const pages = {
@@ -99,20 +661,22 @@ const pages = {
 
 function showPage(name){
 
-    Object.values(pages).forEach(page => {
+    Object.values(pages)
+        .forEach(page => {
 
-        page.classList.remove(
-            "active-page"
-        );
+            page.classList.remove(
+                "active-page"
+            );
 
-    });
+        });
 
 
     if(pages[name]){
 
-        pages[name].classList.add(
-            "active-page"
-        );
+        pages[name]
+            .classList.add(
+                "active-page"
+            );
 
     }
 
@@ -158,15 +722,18 @@ function showPage(name){
    TOAST
 ========================================= */
 
-let toastTimer = null;
+let toastTimer;
 
 
 function toast(message){
 
-    const element = $("toast");
+    const element =
+        $("toast");
+
 
     element.textContent =
         message;
+
 
     element.classList.add(
         "show"
@@ -179,13 +746,16 @@ function toast(message){
 
 
     toastTimer =
-        setTimeout(() => {
+        setTimeout(
+            () => {
 
-            element.classList.remove(
-                "show"
-            );
+                element.classList.remove(
+                    "show"
+                );
 
-        },2500);
+            },
+            2500
+        );
 
 }
 
@@ -210,6 +780,7 @@ function openModal(type){
 
         title.textContent =
             "فروش جدید";
+
 
         content.innerHTML = `
 
@@ -246,7 +817,6 @@ function openModal(type){
             <button
                 id="modalAction"
                 class="form-submit"
-                type="button"
             >
                 افزودن به فاکتور تستی
             </button>
@@ -254,44 +824,39 @@ function openModal(type){
         `;
 
 
-        setTimeout(() => {
+        $("modalAction")
+            .addEventListener(
+                "click",
+                () => {
 
-            $("modalAction")
-                .addEventListener(
-                    "click",
-                    () => {
+                    const barcode =
+                        $("modalBarcode")
+                            .value
+                            .trim();
 
-                        const barcode =
-                            $("modalBarcode")
-                                .value
-                                .trim();
 
-                        const quantity =
-                            $("modalQuantity")
-                                .value;
-
-                        if(!barcode){
-
-                            toast(
-                                "بارکد تستی را وارد کنید"
-                            );
-
-                            return;
-
-                        }
+                    if(!barcode){
 
                         toast(
-                            "کالای تستی به فاکتور اضافه شد"
+                            "بارکد را وارد کنید"
                         );
 
-                        closeModal();
-
-                        showPage("sale");
+                        return;
 
                     }
-                );
 
-        },0);
+
+                    toast(
+                        "کالا به فاکتور تستی اضافه شد"
+                    );
+
+
+                    closeModal();
+
+                    showPage("sale");
+
+                }
+            );
 
     }
 
@@ -300,6 +865,7 @@ function openModal(type){
 
         title.textContent =
             "ورود به انبار";
+
 
         content.innerHTML = `
 
@@ -350,7 +916,6 @@ function openModal(type){
             <button
                 id="modalAction"
                 class="form-submit"
-                type="button"
             >
                 ثبت ورود تستی
             </button>
@@ -358,42 +923,41 @@ function openModal(type){
         `;
 
 
-        setTimeout(() => {
+        $("modalAction")
+            .addEventListener(
+                "click",
+                () => {
 
-            $("modalAction")
-                .addEventListener(
-                    "click",
-                    () => {
+                    const name =
+                        $("modalProductName")
+                            .value
+                            .trim();
 
-                        const name =
-                            $("modalProductName")
-                                .value
-                                .trim();
 
-                        if(!name){
-
-                            toast(
-                                "نام کالای تستی را وارد کنید"
-                            );
-
-                            return;
-
-                        }
+                    if(!name){
 
                         toast(
-                            "ورود کالا به انبار تستی ثبت شد"
+                            "نام کالا را وارد کنید"
                         );
 
-                        closeModal();
-
-                        showPage(
-                            "inventory"
-                        );
+                        return;
 
                     }
-                );
 
-        },0);
+
+                    toast(
+                        "ورود کالا به انبار ثبت شد"
+                    );
+
+
+                    closeModal();
+
+                    showPage(
+                        "inventory"
+                    );
+
+                }
+            );
 
     }
 
@@ -402,6 +966,7 @@ function openModal(type){
 
         title.textContent =
             "ثبت کالا";
+
 
         content.innerHTML = `
 
@@ -450,7 +1015,6 @@ function openModal(type){
             <button
                 id="modalAction"
                 class="form-submit"
-                type="button"
             >
                 ثبت کالای تستی
             </button>
@@ -458,38 +1022,37 @@ function openModal(type){
         `;
 
 
-        setTimeout(() => {
+        $("modalAction")
+            .addEventListener(
+                "click",
+                () => {
 
-            $("modalAction")
-                .addEventListener(
-                    "click",
-                    () => {
+                    const name =
+                        $("modalProductName")
+                            .value
+                            .trim();
 
-                        const name =
-                            $("modalProductName")
-                                .value
-                                .trim();
 
-                        if(!name){
-
-                            toast(
-                                "نام کالا را وارد کنید"
-                            );
-
-                            return;
-
-                        }
+                    if(!name){
 
                         toast(
-                            "کالای تستی ثبت شد"
+                            "نام کالا را وارد کنید"
                         );
 
-                        closeModal();
+                        return;
 
                     }
-                );
 
-        },0);
+
+                    toast(
+                        "کالای تستی ثبت شد"
+                    );
+
+
+                    closeModal();
+
+                }
+            );
 
     }
 
@@ -498,6 +1061,7 @@ function openModal(type){
 
         title.textContent =
             "گزارش فروش";
+
 
         content.innerHTML = `
 
@@ -513,11 +1077,12 @@ function openModal(type){
                     style="
                         font-size:45px;
                         font-weight:900;
-                        color:#8c79ff;
+                        color:#9b7cff;
                     "
                 >
                     18.4M
                 </div>
+
 
                 <div
                     style="
@@ -534,7 +1099,6 @@ function openModal(type){
             <button
                 id="modalAction"
                 class="form-submit"
-                type="button"
                 style="margin-top:15px"
             >
                 بستن گزارش
@@ -543,15 +1107,11 @@ function openModal(type){
         `;
 
 
-        setTimeout(() => {
-
-            $("modalAction")
-                .addEventListener(
-                    "click",
-                    closeModal
-                );
-
-        },0);
+        $("modalAction")
+            .addEventListener(
+                "click",
+                closeModal
+            );
 
     }
 
@@ -599,7 +1159,7 @@ $("modalOverlay")
 
 
 /* =========================================
-   TOP ACTIONS
+   QUICK ACTIONS
 ========================================= */
 
 $("newSaleButton")
@@ -697,10 +1257,11 @@ $("saleSearchButton")
                     .value
                     .trim();
 
+
             if(!value){
 
                 toast(
-                    "نام کالا یا بارکد را وارد کنید"
+                    "بارکد یا نام کالا را وارد کنید"
                 );
 
                 return;
@@ -710,8 +1271,9 @@ $("saleSearchButton")
 
             $("saleTestResult")
                 .textContent =
-                    "کالای تستی پیدا شد: " +
-                    value;
+                "کالای تستی پیدا شد: " +
+                value;
+
 
             toast(
                 "کالای تستی پیدا شد"
@@ -731,16 +1293,19 @@ $("checkoutButton")
         () => {
 
             toast(
-                "فروش تستی با موفقیت ثبت شد"
+                "فروش تستی ثبت شد"
             );
+
 
             $("statSales")
                 .textContent =
                 "18.65M";
 
+
             $("statInvoices")
                 .textContent =
                 "38";
+
 
             showPage("home");
 
@@ -749,7 +1314,7 @@ $("checkoutButton")
 
 
 /* =========================================
-   INVENTORY ACTIONS
+   INVENTORY
 ========================================= */
 
 $("inventoryAddButton")
@@ -769,7 +1334,7 @@ $("inventorySearchButton")
         () => {
 
             toast(
-                "جستجوی تستی انبار فعال شد"
+                "جستجوی تستی انبار"
             );
 
         }
@@ -777,24 +1342,7 @@ $("inventorySearchButton")
 
 
 /* =========================================
-   SALES BUTTONS
-========================================= */
-
-$("allSalesButton")
-    .addEventListener(
-        "click",
-        () => {
-
-            toast(
-                "لیست کامل فروش‌ها در نسخه بعدی"
-            );
-
-        }
-    );
-
-
-/* =========================================
-   REFRESH
+   OTHER BUTTONS
 ========================================= */
 
 $("refreshButton")
@@ -803,12 +1351,21 @@ $("refreshButton")
         () => {
 
             toast(
-                "اطلاعات تستی بروزرسانی شد"
+                "اطلاعات بروزرسانی شد"
             );
 
-            $("statProducts")
-                .textContent =
-                "248";
+        }
+    );
+
+
+$("allSalesButton")
+    .addEventListener(
+        "click",
+        () => {
+
+            toast(
+                "لیست کامل فروش‌ها در نسخه تستی"
+            );
 
         }
     );
@@ -857,18 +1414,21 @@ document
                 const type =
                     item.dataset.menu;
 
+
                 $("sideMenu")
                     .classList.remove(
                         "show"
                     );
 
+
                 if(type === "profile"){
 
                     toast(
-                        "صفحه حساب کاربری تستی"
+                        "حساب کاربری تستی"
                     );
 
                 }
+
 
                 if(type === "settings"){
 
@@ -877,6 +1437,7 @@ document
                     );
 
                 }
+
 
                 if(type === "about"){
 
