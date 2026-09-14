@@ -1,450 +1,439 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="fa" dir="rtl">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
-<meta name="theme-color" content="#05070d">
-<title>BIZA Store</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+
+<title>BIZA SaaS</title>
+
 <link rel="stylesheet" href="style.css">
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 
 <body>
 
-<div id="network"></div>
+<canvas id="network"></canvas>
 
-<div id="app">
+<div id="loginPage" class="login-page">
+    <div class="login-card glass">
+        <div class="login-logo">BIZA</div>
+        <div class="login-title">ورود به فروشگاه</div>
 
-<header class="topbar">
-
-    <div class="brand-area">
-        <div class="brand">BIZA</div>
-
-        <div class="store-user">
-            بیزا مارکت
-            <span>پنل فروشگاه</span>
+        <div class="login-subtitle">
+            ورود امن به پنل فروشگاه
         </div>
+
+        <form id="loginForm">
+
+            <div class="field">
+                <label>نام کاربری</label>
+                <input
+                    id="loginUsername"
+                    type="text"
+                    autocomplete="username"
+                    placeholder="نام کاربری"
+                    required
+                >
+            </div>
+
+            <div class="field">
+                <label>رمز عبور</label>
+                <input
+                    id="loginPassword"
+                    type="password"
+                    autocomplete="current-password"
+                    placeholder="رمز عبور"
+                    required
+                >
+            </div>
+
+            <button class="primary-button login-button" type="submit">
+                ورود
+            </button>
+
+        </form>
+
+        <div id="loginError" class="login-error"></div>
     </div>
-
-    <button id="menuButton" class="glass icon-button">
-        ☰
-    </button>
-
-</header>
-
-
-<main>
-
-<section class="hero">
-
-    <div class="hero-small">
-        امروز، وضعیت فروشگاه
-    </div>
-
-    <h1>
-        سلام،
-        <span class="gradient-text">
-            بیزا مارکت
-        </span>
-    </h1>
-
-</section>
-
-
-<section class="stats-grid">
-
-    <div class="glass stat-card">
-        <div class="stat-label">تعداد کالا</div>
-        <div id="statProducts" class="stat-value blue">248</div>
-    </div>
-
-    <div class="glass stat-card">
-        <div class="stat-label">موجودی انبار</div>
-        <div id="statInventory" class="stat-value green">1842</div>
-    </div>
-
-    <div class="glass stat-card">
-        <div class="stat-label">فروش امروز</div>
-        <div id="statSales" class="stat-value purple">18.4M</div>
-    </div>
-
-    <div class="glass stat-card">
-        <div class="stat-label">فاکتور امروز</div>
-        <div id="statInvoices" class="stat-value white">37</div>
-    </div>
-
-</section>
-
-
-<div class="section-header">
-
-    <h2>عملیات سریع</h2>
-
-    <button id="refreshButton" class="text-button">
-        بروزرسانی
-    </button>
-
 </div>
 
 
-<section class="actions-grid">
+<div id="app" class="app hidden">
 
-    <button id="newSaleButton" class="glass action-card">
+    <header class="topbar">
 
-        <div class="action-icon blue-icon">
-            ＋
-        </div>
+        <div class="topbar-right">
 
-        <div class="action-content">
-            <strong>فروش جدید</strong>
-            <span>ثبت فروش و صدور فاکتور</span>
-        </div>
+            <button id="menuButton" class="icon-button">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
 
-    </button>
+            <div>
+                <div id="storeName" class="store-name">
+                    بیزا مارکت
+                </div>
 
-
-    <button id="stockButton" class="glass action-card">
-
-        <div class="action-icon purple-icon">
-            ▣
-        </div>
-
-        <div class="action-content">
-            <strong>ورود به انبار</strong>
-            <span>ثبت کالا و افزایش موجودی</span>
-        </div>
-
-    </button>
-
-
-    <button id="productButton" class="glass action-card">
-
-        <div class="action-icon blue-icon">
-            ◈
-        </div>
-
-        <div class="action-content">
-            <strong>ثبت کالا</strong>
-            <span>ایجاد کالای جدید</span>
-        </div>
-
-    </button>
-
-
-    <button id="reportButton" class="glass action-card">
-
-        <div class="action-icon purple-icon">
-            ◔
-        </div>
-
-        <div class="action-content">
-            <strong>گزارش فروش</strong>
-            <span>مشاهده آمار فروش</span>
-        </div>
-
-    </button>
-
-</section>
-
-
-<section id="homePage" class="page active-page">
-
-    <div class="section-header">
-
-        <h2>آخرین فروش‌ها</h2>
-
-        <button id="allSalesButton" class="text-button">
-            مشاهده همه
-        </button>
-
-    </div>
-
-
-    <div id="salesList" class="sales-list">
-
-        <div class="glass sale-row">
-
-            <div class="sale-number">01</div>
-
-            <div class="sale-info">
-                <strong>فاکتور #1028</strong>
-                <span>امروز، 18:42 • 3 کالا</span>
-            </div>
-
-            <div class="sale-price">
-                2,450,000
+                <div id="storeCode" class="store-code">
+                    BIZA001
+                </div>
             </div>
 
         </div>
 
+        <div class="topbar-left">
 
-        <div class="glass sale-row">
-
-            <div class="sale-number">02</div>
-
-            <div class="sale-info">
-                <strong>فاکتور #1027</strong>
-                <span>امروز، 17:16 • 1 کالا</span>
-            </div>
-
-            <div class="sale-price">
-                780,000
-            </div>
-
-        </div>
-
-
-        <div class="glass sale-row">
-
-            <div class="sale-number">03</div>
-
-            <div class="sale-info">
-                <strong>فاکتور #1026</strong>
-                <span>امروز، 16:03 • 5 کالا</span>
-            </div>
-
-            <div class="sale-price">
-                4,120,000
-            </div>
-
-        </div>
-
-    </div>
-
-</section>
-
-
-<section id="salePage" class="page">
-
-    <div class="page-title">
-        فروش جدید
-    </div>
-
-    <div class="glass big-panel">
-
-        <div class="search-box">
-
-            <input
-                id="saleBarcode"
-                type="text"
-                placeholder="بارکد یا نام کالا"
-            >
-
-            <button id="saleSearchButton">
-                جستجو
+            <button id="refreshButton" class="icon-button refresh-button">
+                ↻
             </button>
 
         </div>
 
-
-        <div id="saleTestResult" class="test-result">
-            برای شروع یک کالا جستجو کنید.
-        </div>
+    </header>
 
 
-        <div class="cart-row">
+    <main class="pages">
 
-            <div>
-                کالای تستی
+        <!-- HOME -->
+
+        <section id="homePage" class="page active">
+
+            <div class="hero-card glass">
+
+                <div class="hero-content">
+
+                    <div class="hero-small">
+                        پنل فروشگاه
+                    </div>
+
+                    <div id="heroStoreName" class="hero-title">
+                        بیزا مارکت
+                    </div>
+
+                    <div id="heroUserName" class="hero-user">
+                        در حال بارگذاری...
+                    </div>
+
+                </div>
+
+                <div class="hero-orb"></div>
+
             </div>
 
-            <div>
-                × 1
+
+            <div class="stats-grid">
+
+                <div class="stat-card glass">
+                    <div class="stat-label">تعداد کالا</div>
+                    <div id="statProducts" class="stat-value">0</div>
+                </div>
+
+                <div class="stat-card glass">
+                    <div class="stat-label">موجودی انبار</div>
+                    <div id="statInventory" class="stat-value">0</div>
+                </div>
+
+                <div class="stat-card glass">
+                    <div class="stat-label">فروش امروز</div>
+                    <div id="statSales" class="stat-value">0</div>
+                </div>
+
+                <div class="stat-card glass">
+                    <div class="stat-label">فاکتور امروز</div>
+                    <div id="statInvoices" class="stat-value">0</div>
+                </div>
+
             </div>
 
-            <strong>
-                250,000
-            </strong>
 
-        </div>
+            <div class="section-title">
+                دسترسی سریع
+            </div>
+
+            <div class="quick-grid">
+
+                <button id="newSaleButton" class="quick-card glass">
+                    <div class="quick-icon blue">+</div>
+                    <div class="quick-title">فروش جدید</div>
+                    <div class="quick-description">ثبت فروش و صدور فاکتور</div>
+                </button>
+
+                <button id="stockButton" class="quick-card glass">
+                    <div class="quick-icon purple">↓</div>
+                    <div class="quick-title">ورود به انبار</div>
+                    <div class="quick-description">ثبت موجودی جدید</div>
+                </button>
+
+                <button id="productButton" class="quick-card glass">
+                    <div class="quick-icon cyan">□</div>
+                    <div class="quick-title">ثبت کالا</div>
+                    <div class="quick-description">افزودن کالای جدید</div>
+                </button>
+
+                <button id="reportButton" class="quick-card glass">
+                    <div class="quick-icon green">▥</div>
+                    <div class="quick-title">گزارش فروش</div>
+                    <div class="quick-description">مشاهده فروش‌ها</div>
+                </button>
+
+            </div>
 
 
-        <div class="total-row">
+            <div class="section-header">
+                <div class="section-title no-margin">
+                    آخرین فروش‌ها
+                </div>
 
-            <span>
-                جمع کل
-            </span>
+                <button id="openSalesButton" class="text-button">
+                    مشاهده همه
+                </button>
+            </div>
 
-            <strong>
-                250,000 تومان
-            </strong>
+            <div id="salesList" class="sales-list"></div>
 
-        </div>
+        </section>
 
 
-        <button
-            id="checkoutButton"
-            class="primary-button"
-        >
-            ثبت فروش تستی
+        <!-- SALE -->
+
+        <section id="salePage" class="page">
+
+            <div class="page-heading">
+                <div>
+                    <div class="page-title">فروش جدید</div>
+                    <div class="page-subtitle">ثبت سریع کالا با بارکد</div>
+                </div>
+            </div>
+
+
+            <div class="search-box glass">
+
+                <input
+                    id="saleBarcode"
+                    type="text"
+                    placeholder="بارکد یا نام کالا..."
+                    autocomplete="off"
+                >
+
+                <button id="saleSearchButton">
+                    جستجو
+                </button>
+
+            </div>
+
+
+            <div id="saleSearchResult" class="search-result"></div>
+
+
+            <div class="cart-card glass">
+
+                <div class="cart-header">
+                    <span>سبد فروش</span>
+                    <span id="cartCount">0 کالا</span>
+                </div>
+
+                <div id="cartItems" class="cart-items">
+                    <div class="empty-state">
+                        هنوز کالایی به فروش اضافه نشده است.
+                    </div>
+                </div>
+
+                <div class="cart-footer">
+
+                    <div class="total-row">
+                        <span>جمع کل</span>
+                        <strong id="cartTotal">0</strong>
+                    </div>
+
+                    <button id="checkoutButton" class="primary-button">
+                        ثبت فروش
+                    </button>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- INVENTORY -->
+
+        <section id="inventoryPage" class="page">
+
+            <div class="page-heading">
+
+                <div>
+                    <div class="page-title">انبار</div>
+                    <div class="page-subtitle">
+                        موجودی واقعی فروشگاه
+                    </div>
+                </div>
+
+                <button id="inventoryAddButton" class="round-add">
+                    +
+                </button>
+
+            </div>
+
+
+            <div class="search-box glass">
+
+                <input
+                    id="inventorySearchButton"
+                    type="text"
+                    placeholder="جستجوی کالا یا بارکد..."
+                >
+
+            </div>
+
+
+            <div id="inventoryList" class="inventory-list"></div>
+
+        </section>
+
+
+        <!-- SALES -->
+
+        <section id="salesPage" class="page">
+
+            <div class="page-heading">
+
+                <div>
+                    <div class="page-title">فروش‌ها</div>
+                    <div class="page-subtitle">
+                        سوابق فروش فروشگاه
+                    </div>
+                </div>
+
+            </div>
+
+
+            <div id="salesReportList" class="sales-report-list"></div>
+
+        </section>
+
+    </main>
+
+
+    <!-- BOTTOM NAV -->
+
+    <nav class="bottom-nav">
+
+        <button id="navSale" class="nav-item">
+
+            <div class="nav-icon">▣</div>
+            <span>فروش</span>
+
         </button>
 
-    </div>
+        <button id="navHome" class="nav-item active">
 
-</section>
+            <div class="nav-icon">⌂</div>
+            <span>خانه</span>
 
-
-<section id="inventoryPage" class="page">
-
-    <div class="page-title">
-        انبار
-    </div>
-
-
-    <div class="inventory-actions">
-
-        <button
-            id="inventoryAddButton"
-            class="glass mini-action"
-        >
-            ＋ ورود کالا
         </button>
 
-        <button
-            id="inventorySearchButton"
-            class="glass mini-action"
-        >
-            ⌕ جستجو
+        <button id="navInventory" class="nav-item">
+
+            <div class="nav-icon">▤</div>
+            <span>انبار</span>
+
         </button>
 
-    </div>
-
-
-    <div id="inventoryList" class="inventory-list">
-
-        <div class="glass inventory-row">
-
-            <div class="inventory-icon">
-                01
-            </div>
-
-            <div class="inventory-info">
-
-                <strong>
-                    کالای تستی اول
-                </strong>
-
-                <span>
-                    بارکد: 123456789
-                </span>
-
-            </div>
-
-            <div class="inventory-count">
-                120 عدد
-            </div>
-
-        </div>
-
-
-        <div class="glass inventory-row">
-
-            <div class="inventory-icon">
-                02
-            </div>
-
-            <div class="inventory-info">
-
-                <strong>
-                    کالای تستی دوم
-                </strong>
-
-                <span>
-                    بارکد: 987654321
-                </span>
-
-            </div>
-
-            <div class="inventory-count">
-                64 عدد
-            </div>
-
-        </div>
-
-    </div>
-
-</section>
-
-</main>
-
-
-<nav class="glass bottom-nav">
-
-    <button id="navSale" class="nav-button">
-
-        <div class="nav-icon">＋</div>
-
-        <span>فروش</span>
-
-    </button>
-
-
-    <button id="navHome" class="nav-button active">
-
-        <div class="nav-icon">⌂</div>
-
-        <span>خانه</span>
-
-    </button>
-
-
-    <button id="navInventory" class="nav-button">
-
-        <div class="nav-icon">▤</div>
-
-        <span>انبار</span>
-
-    </button>
-
-</nav>
+    </nav>
 
 </div>
 
 
+<!-- SIDE MENU -->
+
+<div id="sideMenu" class="side-menu">
+
+    <div class="side-menu-header">
+
+        <div>
+            <div class="side-title">BIZA</div>
+            <div id="sideStoreName" class="side-store">
+                بیزا مارکت
+            </div>
+        </div>
+
+        <button id="menuClose" class="menu-close">
+            ×
+        </button>
+
+    </div>
+
+
+    <div class="side-menu-content">
+
+        <button class="menu-item" data-action="home">
+            <span>⌂</span>
+            خانه
+        </button>
+
+        <button class="menu-item" data-action="products">
+            <span>□</span>
+            کالاها
+        </button>
+
+        <button class="menu-item" data-action="inventory">
+            <span>▤</span>
+            انبار
+        </button>
+
+        <button class="menu-item" data-action="sales">
+            <span>▣</span>
+            فروش‌ها
+        </button>
+
+        <button class="menu-item" data-action="report">
+            <span>▥</span>
+            گزارش فروش
+        </button>
+
+        <button class="menu-item" data-action="settings">
+            <span>⚙</span>
+            تنظیمات
+        </button>
+
+    </div>
+
+
+    <div class="side-menu-footer">
+
+        <button id="logoutButton" class="logout-button">
+            خروج از حساب
+        </button>
+
+    </div>
+
+</div>
+
+
+<!-- MODAL -->
+
 <div id="modalOverlay" class="modal-overlay">
 
-    <div class="glass modal">
+    <div class="modal glass">
 
         <div class="modal-header">
 
-            <h2 id="modalTitle">
-                ثبت کالا
-            </h2>
+            <div id="modalTitle">
+                عنوان
+            </div>
 
-            <button
-                id="modalClose"
-                class="close-button"
-            >
+            <button id="modalClose">
                 ×
             </button>
 
         </div>
 
-        <div id="modalContent"></div>
+        <div id="modalContent" class="modal-content"></div>
 
     </div>
-
-</div>
-
-
-<div id="sideMenu" class="menu-panel glass">
-
-    <button id="menuClose" class="close-button">
-        ×
-    </button>
-
-    <h2>BIZA</h2>
-
-    <button class="menu-item" data-menu="profile">
-        حساب کاربری
-    </button>
-
-    <button class="menu-item" data-menu="settings">
-        تنظیمات
-    </button>
-
-    <button class="menu-item" data-menu="about">
-        درباره سیستم
-    </button>
 
 </div>
 
